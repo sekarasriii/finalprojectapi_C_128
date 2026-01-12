@@ -15,3 +15,19 @@ function getFromStorage(key) {
     const data = localStorage.getItem(key);
     return data ? JSON.parse(data) : null;
 }
+// Helper function untuk menghapus data dari localStorage
+function removeFromStorage(key) {
+    localStorage.removeItem(key);
+}
+
+// Helper function untuk cek apakah user sudah login
+function isLoggedIn() {
+    return getFromStorage('user') !== null;
+}
+
+// Helper function untuk logout
+function logout() {
+    removeFromStorage('user');
+    removeFromStorage('apiKey');
+    window.location.href = 'login.html';
+}
