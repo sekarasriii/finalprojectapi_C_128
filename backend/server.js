@@ -12,3 +12,12 @@ app.use(express.urlencoded({ extended: true })); // Parse URL-encoded data
 
 // Serve static files (uploaded images)
 app.use('/uploads', express.static('uploads'));
+// Import routes
+const authRoutes = require('./routes/auth.routes');
+const apikeyRoutes = require('./routes/apikey.routes');
+const serviceRoutes = require('./routes/service.routes');
+const orderRoutes = require('./routes/order.routes');
+const adminRoutes = require('./routes/admin.routes');
+
+// Test database connection
+require('./config/database');
