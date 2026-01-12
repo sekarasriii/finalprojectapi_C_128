@@ -56,4 +56,18 @@ if (document.getElementById('loginForm')) {
 
                 alert('Login berhasil!');
 
-                
+                // Redirect berdasarkan role
+                if (data.data.role === 'admin') {
+                    window.location.href = 'admin/dashboard.html';
+                } else {
+                    window.location.href = 'client/dashboard.html';
+                }
+            } else {
+                alert('Login gagal: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan saat login.');
+        }
+    });
+}
