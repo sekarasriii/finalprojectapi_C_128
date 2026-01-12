@@ -114,3 +114,67 @@ const getOrders = async (req, res) => {
     }
 };
 
+// Update Order Status (Admin Only)
+const updateOrderStatus = async (req, res) => {
+    try {
+        // Cek apakah user adalah admin
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({
+                success: false,
+                message: 'Hanya admin yang dapat mengubah status pesanan'
+            });
+        }
+
+        const { id } = req.params;
+        const { status } = req.body;
+
+        // Validasi status
+        const validStatuses = ['pending', 'processing', 'completed', 'cancelled'];
+        if (!status || !validStatuses.includes(status)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Status harus salah satu dari: pending, processing, completed, cancelled'
+            });
+        }
+
+        // Cek apakah order ada
+        const [orders] = await db.query(
+            'SELECT * FROM orders WHERE order_id = ?',
+            [id]
+        );
+
+        if (orders.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Pesanan tidak ditemukan'
+            });
+        }
+
+        // Update status
+        await db.query(
+            'UPDATE orders SET status = ? WHERE order_id = ?',
+            [status, id]
+        );
+
+        res.status(200).json({
+            success: true,
+            message: 'Status pesanan berhasil diubah',
+            data: {
+                order_id: parseInt(id),
+                status: status
+            }
+        });
+    } catch (error) {
+        console.error('Error in updateOrderStatus:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Terjadi kesalahan saat mengubah status pesanan'
+        });
+    }
+};
+
+module.exports = {
+    createOrder,
+    getOrders,
+    updateOrderStatus
+};
