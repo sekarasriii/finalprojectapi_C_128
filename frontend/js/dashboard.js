@@ -94,3 +94,44 @@ async function regenerateApiKey() {
     }
     await generateApiKey();
 }
+// Load Projects dari backend
+async function loadProjects() {
+    if (!apiKey) {
+        document.getElementById('noProjects').classList.remove('hidden');
+        document.getElementById('projectsList').innerHTML = '';
+        updateStats(0, 0, 0);
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_CONFIG.BASE_URL}/projects`, {
+            headers: {
+                'x-api-key': apiKey
+            }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            document.getElementById('noProjects').classList.add('hidden');
+            displayProjects(data.data);
+            updateStats(data.data);
+        } else {
+            showNotification('error', 'Gagal memuat projects: ' + data.message);
+        }
+    } catch (error) {
+        console.error('Error loading projects:', error);
+        showNotification('error', 'Terjadi kesalahan saat memuat projects.');
+    }
+}
+
+// Update statistics cards
+function updateStats(projects) {
+    const total = projects.length;
+    const completed = projects.filter(p => p.status === 'completed').length;
+    const inProgress = projects.filter(p => p.status === 'in_progress').length;
+
+    document.getElementById('totalProjects').textContent = total;
+    document.getElementById('completedProjects').textContent = completed;
+    document.getElementById('activeProjects').textContent = inProgress;
+}
